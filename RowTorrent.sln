@@ -5,6 +5,13 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RowTorrentAPI", "RowTorrentAPI\RowTorrentAPI.csproj", "{F807EC65-B205-4643-85F1-0F4198AEBB39}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RowTorrent", "RowTorrent\RowTorrent.csproj", "{B9CD8A19-0F34-43D5-ADC2-FB33E385E55B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APITester", "APITester\APITester.csproj", "{A01D8219-FDF9-45B6-A40D-4EFC33DACF8C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F807EC65-B205-4643-85F1-0F4198AEBB39} = {F807EC65-B205-4643-85F1-0F4198AEBB39}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +22,14 @@ Global
 		{F807EC65-B205-4643-85F1-0F4198AEBB39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F807EC65-B205-4643-85F1-0F4198AEBB39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F807EC65-B205-4643-85F1-0F4198AEBB39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9CD8A19-0F34-43D5-ADC2-FB33E385E55B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9CD8A19-0F34-43D5-ADC2-FB33E385E55B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9CD8A19-0F34-43D5-ADC2-FB33E385E55B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9CD8A19-0F34-43D5-ADC2-FB33E385E55B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A01D8219-FDF9-45B6-A40D-4EFC33DACF8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A01D8219-FDF9-45B6-A40D-4EFC33DACF8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A01D8219-FDF9-45B6-A40D-4EFC33DACF8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A01D8219-FDF9-45B6-A40D-4EFC33DACF8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

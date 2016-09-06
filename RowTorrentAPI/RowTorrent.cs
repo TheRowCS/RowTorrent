@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RowTorrentAPI
 {
-    public class Class1
+    public class RowTorrent
     {
     }
 }
