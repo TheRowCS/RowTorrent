@@ -48,11 +48,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="bencoding\AbstractBencodeValue.cs" />
-    <Compile Include="bencoding\BEncoder.cs" />
-    <Compile Include="bencoding\BNumber.cs" />
+    <Compile Include="bencoding\BDictionary.cs" />
     <Compile Include="bencoding\BElement.cs" />
+    <Compile Include="bencoding\BDecoder.cs" />
+    <Compile Include="bencoding\BInteger.cs" />
+    <Compile Include="bencoding\BList.cs" />
     <Compile Include="bencoding\BString.cs" />
+    <Compile Include="bencoding\AbstractBElement.cs" />
     <Compile Include="RowTorrent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\Math.cs" />

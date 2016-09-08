@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RowTorrentAPI", "RowTorrent
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RowTorrent", "RowTorrent\RowTorrent.csproj", "{B9CD8A19-0F34-43D5-ADC2-FB33E385E55B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APITester", "APITester\APITester.csproj", "{A01D8219-FDF9-45B6-A40D-4EFC33DACF8C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RowTorrentApiTest", "UnitTestProject1\RowTorrentApiTest.csproj", "{A1E8E079-AC42-41D5-95E7-5CEC9D32D12D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F807EC65-B205-4643-85F1-0F4198AEBB39} = {F807EC65-B205-4643-85F1-0F4198AEBB39}
 	EndProjectSection
@@ -26,10 +26,10 @@ Global
 		{B9CD8A19-0F34-43D5-ADC2-FB33E385E55B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9CD8A19-0F34-43D5-ADC2-FB33E385E55B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9CD8A19-0F34-43D5-ADC2-FB33E385E55B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A01D8219-FDF9-45B6-A40D-4EFC33DACF8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A01D8219-FDF9-45B6-A40D-4EFC33DACF8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A01D8219-FDF9-45B6-A40D-4EFC33DACF8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A01D8219-FDF9-45B6-A40D-4EFC33DACF8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1E8E079-AC42-41D5-95E7-5CEC9D32D12D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1E8E079-AC42-41D5-95E7-5CEC9D32D12D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1E8E079-AC42-41D5-95E7-5CEC9D32D12D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1E8E079-AC42-41D5-95E7-5CEC9D32D12D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
