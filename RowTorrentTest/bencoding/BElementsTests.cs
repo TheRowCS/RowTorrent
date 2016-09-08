@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RowTorrentAPI;
 using RowTorrentAPI.bencoding;
 
-namespace UnitTestProject1.bencoding {
+namespace RowTorrentTest.bencoding {
     [TestClass]
     public class BElementsTests {
         [TestMethod]

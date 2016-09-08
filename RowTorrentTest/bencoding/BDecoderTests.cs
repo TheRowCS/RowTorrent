@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RowTorrentAPI.bencoding;
 
-namespace UnitTestProject1.bencoding {
+namespace RowTorrentTest.bencoding {
     [TestClass]
     public class BDecoderTests {
         [TestMethod]
