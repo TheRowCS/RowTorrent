@@ -48,13 +48,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="bencoding\BDictionary.cs" />
-    <Compile Include="bencoding\BElement.cs" />
-    <Compile Include="bencoding\BDecoder.cs" />
-    <Compile Include="bencoding\BInteger.cs" />
-    <Compile Include="bencoding\BList.cs" />
-    <Compile Include="bencoding\BString.cs" />
-    <Compile Include="bencoding\AbstractBElement.cs" />
+    <Compile Include="Bencoding\BDictionary.cs" />
+    <Compile Include="Bencoding\BElement.cs" />
+    <Compile Include="Bencoding\BDecoder.cs" />
+    <Compile Include="Bencoding\BInteger.cs" />
+    <Compile Include="Bencoding\BList.cs" />
+    <Compile Include="Bencoding\BString.cs" />
+    <Compile Include="Bencoding\AbstractBElement.cs" />
     <Compile Include="RowTorrent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\Math.cs" />
@@ -63,7 +63,9 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="files\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

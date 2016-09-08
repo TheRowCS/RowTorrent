@@ -69,12 +69,12 @@ namespace RowTorrentTest.bencoding {
             var tempDict = new Dictionary<string, AbstractBElement>();
             StringBuilder resultBuilder = new StringBuilder();
             string expectedResult;
-
             BDictionary bDict;
 
             resultBuilder.Append(NodeSymbols.DictStart);
             for (int i = 0; i < 5; i++) {
                 tempDict.Add(i.ToString(), new BInteger(i));
+                // Manually bencodes the values to test against.
                 resultBuilder.Append(
                     $"{i.ToString().Length}{NodeSymbols.Colon}" +
                     $"{i}{NodeSymbols.IntStart}{i}{NodeSymbols.DelimEnd}"
