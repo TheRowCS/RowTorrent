@@ -7,16 +7,30 @@ using System.Threading.Tasks;
 
 namespace RowTorrentAPI.bencoding {
     public class BDictionary : AbstractBElement, IEnumerable {
-        private readonly Dictionary<string, AbstractBElement> InnerValue;
+        /// <summary>
+        /// A dictionary of AbstractBElements with string keys.
+        /// </summary>
+        public readonly Dictionary<string, AbstractBElement> InnerValue;
 
+        /// <summary>
+        /// Creates a new empty BDictionary object.
+        /// </summary>
         public BDictionary() {
             InnerValue = new Dictionary<String, AbstractBElement>();
         }
 
+        /// <summary>
+        /// Creates a new BDictionary object from an existing dictionary of String/AbstractBelement pairs.
+        /// </summary>
+        /// <param name="dict">The dictionary to be added to BDictionary object.</param>
         public BDictionary(Dictionary<String, AbstractBElement> dict) {
             InnerValue = new Dictionary<string, AbstractBElement>(dict);
         }
 
+        /// <summary>
+        /// Converts the dictionary to a bencoded string.
+        /// </summary>
+        /// <returns>The BDictionary object as a bencoded string.</returns>
         public override string BencodeElement() {
             var str = new StringBuilder();
             str.Append(NodeSymbols.DictStart);
@@ -36,6 +50,7 @@ namespace RowTorrentAPI.bencoding {
             return InnerValue.GetEnumerator();
         }
 
+        // Array accessor for dictionary.
         public AbstractBElement this[string key] {
             get { return InnerValue[key]; }
             set { InnerValue[key] = value; }

@@ -7,7 +7,7 @@ using RowTorrentAPI.bencoding;
 
 namespace UnitTestProject1.bencoding {
     [TestClass]
-    public class BElements {
+    public class BElementsTests {
         [TestMethod]
         public void BStringTest() {
             string unencodedString = "hello world";

@@ -10,11 +10,23 @@ namespace RowTorrentAPI.bencoding {
         private static BinaryReader _binReader;
         private static Stream _stream;
 
+        /// <summary>
+        /// Decodes a bencoded string into its original value.
+        /// </summary>
+        /// <param name="bencoded">The string to be decoded.</param>
+        /// <returns>Returns the decoded string.</returns>
         public static AbstractBElement Decode(string bencoded) {
             return Decode(bencoded.Select(c => (byte) c).ToArray());
         }
 
-
+        /// <summary>
+        /// Decodes an bencoded byte array.
+        /// </summary>
+        /// <exception cref="Exception">
+        /// Throws an exception if byte stream cannot be parsed
+        /// </exception>
+        /// <param name="bencoded">An array of chars representing a bencoded string.</param>
+        /// <returns>A decoded string.</returns>
         public static AbstractBElement Decode(byte[] bencoded) {
             try {
                 using (_stream = new MemoryStream(bencoded))
@@ -27,6 +39,7 @@ namespace RowTorrentAPI.bencoding {
             }
         }
 
+        // Routes bencoded node to the appropriate parsing method
         private static AbstractBElement ParseElement() {
             switch (CurrentNodeType()) {
                 case BencodeType.Integer:
@@ -58,25 +71,26 @@ namespace RowTorrentAPI.bencoding {
         }
 
         private static BList ParseList() {
-            char endChar = 'e';
-            char beginChar = 'l';
             var list = new BList();
-            if (_binReader.PeekChar() != beginChar) throw new Exception("Expected list.");
+
+            if (_binReader.PeekChar() != NodeSymbols.ListStart) {
+                throw new Exception("Expected list.");
+            }
 
             _binReader.Read();
-            while ((char) _binReader.PeekChar() != endChar) {
+            while ((char) _binReader.PeekChar() != NodeSymbols.DelimEnd) {
                 list.Add(ParseElement());
             }
+
             _binReader.Read();
             return list;
         }
 
         private static BString ParseString() {
-            char lenEndChar = ':';
             if (!char.IsDigit((char) _binReader.PeekChar()))
                 throw new Exception("Expected to read string length.");
-            long length = ReadIntegerValue(lenEndChar);
-            if (length < 0) string.Format("String can not have a negative length of {0}.", length);
+            long length = ReadIntegerValue(NodeSymbols.Colon);
+
             int len;
             var byteResult = new byte[length];
             if ((len = _binReader.Read(byteResult, 0, (int) length)) != length)
@@ -86,11 +100,12 @@ namespace RowTorrentAPI.bencoding {
         }
 
         private static BInteger ParseInteger() {
-            char endChar = 'e';
-            char beginChar = 'i';
-            if (_binReader.PeekChar() != beginChar) throw new Exception("Expected integer.");
+            if (_binReader.PeekChar() != NodeSymbols.IntStart) {
+                throw new Exception("Expected integer.");
+            }
             _binReader.Read();
-            long result = ReadIntegerValue(endChar);
+
+            long result = ReadIntegerValue(NodeSymbols.DelimEnd);
             return new BInteger(result);
         }
 
@@ -136,6 +151,9 @@ namespace RowTorrentAPI.bencoding {
         }
     }
 
+    /// <summary>
+    /// Supported bencodable formats.
+    /// </summary>
     public enum BencodeType {
         String,
         Integer,
@@ -143,6 +161,9 @@ namespace RowTorrentAPI.bencoding {
         Dictionary,
     }
 
+    /// <summary>
+    /// A collection of delimiter chars used by bencoding.
+    /// </summary>
     public static class NodeSymbols {
         public const char Colon = ':';
         public const char IntStart = 'i';

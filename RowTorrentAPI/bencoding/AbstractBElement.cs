@@ -17,7 +17,7 @@ namespace RowTorrentAPI.bencoding {
         /// <summary>
         /// Returns the value as a bencoded string.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns a string encoded with bencoding.</returns>
         public abstract string BencodeElement();
     }
 }

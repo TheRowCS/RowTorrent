@@ -52,7 +52,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="bencoding\BElements.cs" />
+    <Compile Include="bencoding\BDecoderTests.cs" />
+    <Compile Include="bencoding\BElementsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
