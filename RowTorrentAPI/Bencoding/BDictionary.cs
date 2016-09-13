@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RowTorrentAPI.bencoding {
-    public class BDictionary : AbstractBElement, IEnumerable {
+    public class BDictionary : AbstractBElement, IEnumerable<KeyValuePair<string, AbstractBElement>> {
         /// <summary>
         /// A dictionary of AbstractBElements with string keys.
         /// </summary>
@@ -71,8 +71,9 @@ namespace RowTorrentAPI.bencoding {
         public override string ToString() {
             var buff = new StringBuilder();
             buff.Append("dictionary: { ");
-            foreach (var el in InnerValue)
+            foreach (var el in InnerValue) {
                 buff.Append(el.Key + "->" + el.Value + ", ");
+            }
             buff.Remove(buff.Length - 2, 2);
             buff.Append(" }");
             return buff.ToString();

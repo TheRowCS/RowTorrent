@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace RowTorrentAPI.bencoding {
-    public class BList : AbstractBElement, IEnumerable {
+    public class BList : AbstractBElement, IEnumerable<AbstractBElement> {
         /// <summary>
         /// A list of AbstractBElements.
         /// </summary>
@@ -32,6 +32,8 @@ namespace RowTorrentAPI.bencoding {
         /// </summary>
         /// <param name="collection">The list of strings to be bencoded.</param>
         public BList(IEnumerable<string> collection) {
+            if (collection == null) throw new NullReferenceException("Collection is null");
+            InnerValue = new List<AbstractBElement>();
             foreach (var item in collection) {
                 InnerValue.Add(new BString(item));
             }

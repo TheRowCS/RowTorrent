@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RowTorrentAPI.bencoding {
     /// <summary>
@@ -46,7 +42,7 @@ namespace RowTorrentAPI.bencoding {
                 return BencodedString.Equals(other.BencodedString);
             }
             catch (InvalidCastException e) {
-                throw new InvalidCastException();
+                throw new InvalidCastException(e.Message);
             }
         }
 
@@ -57,5 +53,6 @@ namespace RowTorrentAPI.bencoding {
         public static implicit operator string(BString value) {
             return value.InnerValue;
         }
+
     }
 }
