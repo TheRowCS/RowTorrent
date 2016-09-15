@@ -12,7 +12,7 @@ namespace RowTorrentAPI.Exceptions {
         public NullBencodedEntryException(string message) : base(message) {
         }
 
-        public NullBencodedEntryException(String message, Exception inner) : base(message, inner) {
+        public NullBencodedEntryException(string message, Exception inner) : base(message, inner) {
         }
     }
 }

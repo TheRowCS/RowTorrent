@@ -12,7 +12,7 @@ namespace RowTorrentAPI.Exceptions {
         public InvalidMetaException(string message) : base(message) {
         }
 
-        public InvalidMetaException(String message, Exception inner) : base(message, inner) {
+        public InvalidMetaException(string message, Exception inner) : base(message, inner) {
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using RowTorrentAPI.Exceptions;
 
 namespace RowTorrentAPI.bencoding {
     public static class BDecoder {
@@ -50,13 +51,13 @@ namespace RowTorrentAPI.bencoding {
                 case BencodeType.Dictionary:
                     return DecodeDictionary();
                 default:
-                    throw new Exception("Unrecognized node type.");
+                    throw new InvalidBencodeNodeException("Unrecognized node type.");
             }
         }
 
         private static BString DecodeString() {
             if (!char.IsDigit((char) _binReader.PeekChar())) {
-                throw new Exception("Expected to read string length.");
+                throw new InvalidCastException("Byte could not be cast to char in DecodeString()");
             }
 
             long length = ParseIntegerValue(NodeSymbols.Colon);
@@ -64,15 +65,14 @@ namespace RowTorrentAPI.bencoding {
             int len = _binReader.Read(byteResult, 0, (int) length);
 
             if (len != length) {
-                throw new Exception(
-                    $"Expected length of {length} from BinaryRead. Got: {len}");
+                throw new IndexOutOfRangeException($"Expected length of {length} from BinaryRead. Got: {len}");
             }
             return new BString(Encoding.UTF8.GetString(byteResult));
         }
 
         private static BInteger DecodeInteger() {
             if (_binReader.PeekChar() != NodeSymbols.IntStart) {
-                throw new Exception("Expected integer.");
+                throw new UnexpectedNodeException("Expected integer.");
             }
             _binReader.Read();
 
@@ -84,7 +84,7 @@ namespace RowTorrentAPI.bencoding {
             var list = new BDictionary();
             char peekChar;
             if (_binReader.PeekChar() != NodeSymbols.DictStart) {
-                throw new Exception("Expected dictionary.");
+                throw new UnexpectedNodeException("Expected dictionary.");
             }
 
             _binReader.Read();
@@ -92,7 +92,7 @@ namespace RowTorrentAPI.bencoding {
             for (; peekChar != NodeSymbols.DelimEnd; peekChar = CharFromInt(_binReader.PeekChar())) {
                 var key = DecodeElement() as BString;
                 if (key == null) {
-                    throw new Exception("Key is expected to be a string.");
+                    throw new InvalidKeyException("Dictionary Key is expected to be a string.");
                 }
                 list.Add(key, DecodeElement());
             }
@@ -106,7 +106,7 @@ namespace RowTorrentAPI.bencoding {
             var list = new BList();
             int peekChar = _binReader.PeekChar();
             if (peekChar != NodeSymbols.ListStart) {
-                throw new Exception("Expected list.");
+                throw new UnexpectedNodeException("Expected list.");
             }
 
             _binReader.Read();
@@ -129,7 +129,7 @@ namespace RowTorrentAPI.bencoding {
             char c = CharFromInt(_binReader.Read());
             for (; c != delimiter; c = CharFromInt(_binReader.Read())) {
                 if (!char.IsDigit(c)) {
-                    throw new Exception($"Expected a digit, got '{c}'.");
+                    throw new InvalidCastException("Couldnt cast byte to char in ParseIntegerValue");
                 }
                 result *= numBase;
                 result += NumericValueToLong(char.GetNumericValue(c));
@@ -157,7 +157,7 @@ namespace RowTorrentAPI.bencoding {
                 case '9':
                     return BencodeType.String;
                 default:
-                    throw new Exception("Temporary exception");
+                    throw new UnexpectedNodeException("Unrecognised node used in GetCurretntNodesType");
             }
         }
 
