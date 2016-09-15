@@ -18,7 +18,7 @@ namespace RowTorrentAPI.Connection {
         public readonly int BlockSize;
 
         public string PeerId { get; private set; }
-        public const short Port = 6882;
+        public const short Port = 6881;
         public Socket Listener { get; private set; }
 
         public static GlobalData Instance => ThreadSafeInstance();

@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using RowTorrentAPI.bencoding;
 using RowTorrentAPI.Connection;
+using RowTorrentAPI.Exceptions;
 using RowTorrentAPI.Util;
+
+//TODO create custom exceptions.
 
 namespace RowTorrentAPI.Files {
     /// <summary>
@@ -58,7 +62,7 @@ namespace RowTorrentAPI.Files {
         public TorrentFile(string path)
             : this(File.ReadAllBytes(path)) {
             if (path == null) {
-                throw new ArgumentNullException(nameof(path));
+                throw new DirectoryNotFoundException();
             }
         }
 
@@ -158,7 +162,9 @@ namespace RowTorrentAPI.Files {
         private void DecodeMultipleFiles(BDictionary info, List<FileData> decodedFileList) {
             var files = info["files"] as BList;
             FileUtils.CheckInfoFiles(files);
-            foreach (BDictionary file in files) {
+            Debug.Assert(files != null, "files != null");
+            foreach (var abstractBElement in files) {
+                var file = (BDictionary) abstractBElement;
                 FileData torrentFile = CreateTorrentFile(file);
                 decodedFileList.Add(torrentFile);
             }
@@ -176,7 +182,7 @@ namespace RowTorrentAPI.Files {
             var filePathList = new List<string>();
             string[] filePathArray;
 
-            if (paths == null) throw new NullReferenceException();
+            if (paths == null) throw new NullBencodedEntryException($"{nameof(paths)} list cannot be null");
 
             foreach (var path in paths) {
                 var entry = path as BString;
@@ -196,7 +202,7 @@ namespace RowTorrentAPI.Files {
         private BString GetNameFromInfo(BDictionary info) {
             var name = info["name"] as BString;
             if (name == null) {
-                throw new NullReferenceException("Name cannot be null");
+                throw new NullBencodedEntryException($"{nameof(Name)}) cannot be null");
             }
             return name;
         }
@@ -206,7 +212,9 @@ namespace RowTorrentAPI.Files {
             /* Splits pieces string into blocks of 20 bytes (the size of the SHA1 of each file.)*/
             /************************************************************************************/
             if (info["pieces"] == null) throw new NullReferenceException();
-            byte[] rawChecksum = Encoding.ASCII.GetBytes((info["pieces"] as BString).InnerValue);
+            var infoPieces = info["pieces"] as BString;
+            Debug.Assert(infoPieces != null, "infoPieces != null");
+            byte[] rawChecksum = Encoding.ASCII.GetBytes(infoPieces.InnerValue);
             if (pieceLength == null || rawChecksum == null || rawChecksum.Length%CheckSumSize != 0) {
                 throw new Exception();
             }
@@ -218,8 +226,12 @@ namespace RowTorrentAPI.Files {
             /***********************************************************************************/
             /* Performs the actual splitting of sha1 data.                                     */
             /***********************************************************************************/
-            byte[] rawChecksums = Encoding.ASCII.GetBytes((info["pieces"] as BString).InnerValue);
-            return rawChecksums.Split(20);
+            var bString = info[TorrentKeys.InfoPieces] as BString;
+            if (bString != null) {
+                byte[] rawChecksums = Encoding.ASCII.GetBytes(bString.InnerValue);
+                return rawChecksums.Split(20);
+            }
+            throw new NullBencodedEntryException($"{TorrentKeys.InfoPieces} cannot be null");
         }
 
         private BDictionary ReadMetaInfo() {
@@ -229,15 +241,17 @@ namespace RowTorrentAPI.Files {
         }
 
         private void CheckMetadata(BDictionary metadata) {
-            if (metadata == null) throw new Exception("Invalid metadata.");
-            if (!metadata.ContainsKey("announce")) throw new Exception("Invalid metadata, 'announce' not found.");
-            if (!metadata.ContainsKey("info")) throw new Exception("Invalid metadata, 'info' not found.");
+            if (metadata == null) throw new InvalidMetaException("Invalid metadata.");
+            if (!metadata.ContainsKey("announce")) {
+                throw new InvalidMetaException("Invalid metadata, 'announce' not found.");
+            }
+            if (!metadata.ContainsKey("info")) throw new InvalidMetaException("Invalid metadata, 'info' not found.");
         }
 
         // Adds metadata about how files are treated.
         private static void AddInfo(string torrentName, string directoryRoot, BDictionary info, int pieceLength,
             List<FileData> files, List<byte[]> pieces) {
-            info.Add("piece length", new BInteger(pieceLength));
+            info.Add(TorrentKeys.InfoPieceLength, new BInteger(pieceLength));
             var bencodedPieces = new StringBuilder();
 
             foreach (var piece in pieces) {
@@ -245,25 +259,25 @@ namespace RowTorrentAPI.Files {
                     bencodedPieces.Append((char) data);
                 }
             }
-            info.Add("pieces", new BString(bencodedPieces.ToString()));
+            info.Add(TorrentKeys.InfoPieces, new BString(bencodedPieces.ToString()));
 
             if (files.Count == 1) {
-                info.Add("name", new BString(torrentName));
-                info.Add("length", new BInteger(files[0].Length));
+                info.Add(TorrentKeys.InfoName, new BString(torrentName));
+                info.Add(TorrentKeys.InfoFilesLength, new BInteger(files[0].Length));
             }
             else if (files.Count > 1) {
-                info.Add("name", new BString(directoryRoot));
+                info.Add(TorrentKeys.InfoName, new BString(directoryRoot));
                 var filesList = new BList();
 
                 foreach (FileData inputFile in files) {
                     var aFile = new BDictionary();
-                    aFile.Add("length", new BInteger(inputFile.Length));
+                    aFile.Add(TorrentKeys.InfoFilesLength, new BInteger(inputFile.Length));
 
                     var filePath = new BList(inputFile.Path.Split());
-                    aFile.Add("path", filePath);
+                    aFile.Add(TorrentKeys.InfoFilesPath, filePath);
                     filesList.Add(aFile);
                 }
-                info.Add("files", filesList);
+                info.Add(TorrentKeys.InfoFiles, filesList);
             }
             else {
                 throw new ArgumentOutOfRangeException(nameof(files));
@@ -306,9 +320,12 @@ namespace RowTorrentAPI.Files {
         public const string Encoding = "encoding"; // optional.
 
         //Info keys
+        public const string InfoName = "name";
         public const string InfoPieceLength = "piece length";
         public const string InfoPieces = "pieces";
         public const string InfoPrivate = "private"; // optional.
+        public const string InfoFiles = "files";
+        public const string InfoFilesLength = "length";
+        public const string InfoFilesPath = "path";
     }
-
 }
