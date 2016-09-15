@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -132,7 +130,7 @@ namespace RowTorrentAPI.Files {
 
         private byte[] ComputeInfoHash(BDictionary info) {
             SHA1 infoHasher = SHA1.Create();
-            byte[] data = Encoding.UTF8.GetBytes(info.BencodedString);
+            byte[] data = Encoding.ASCII.GetBytes(info.BencodedString);
             byte[] dataHash = infoHasher.ComputeHash(data);
             return dataHash;
         }
@@ -204,19 +202,36 @@ namespace RowTorrentAPI.Files {
         }
 
         private List<byte[]> GetRawChecksums(BDictionary info, BInteger pieceLength) {
+            /************************************************************************************/
+            /* Splits pieces string into blocks of 20 bytes (the size of the SHA1 of each file.)*/
+            /************************************************************************************/
             if (info["pieces"] == null) throw new NullReferenceException();
-            byte[] rawChecksum = Encoding.UTF8.GetBytes((info["pieces"] as BString).InnerValue);
+            byte[] rawChecksum = Encoding.ASCII.GetBytes((info["pieces"] as BString).InnerValue);
             if (pieceLength == null || rawChecksum == null || rawChecksum.Length%CheckSumSize != 0) {
                 throw new Exception();
             }
-            IEnumerable<byte[]> slicedChecksums = rawChecksum.Batch(CheckSumSize)
-                .Select(e => e.ToArray());
 
-            return slicedChecksums.ToList();
+            return SplitPieces(info, pieceLength).ToList();
+        }
+
+        private IEnumerable<byte[]> SplitPieces(BDictionary info, BInteger pieceLength) {
+            /***********************************************************************************/
+            /* Performs the actual splitting of sha1 data.                                     */
+            /***********************************************************************************/
+            byte[] rawChecksums = Encoding.ASCII.GetBytes((info["pieces"] as BString).InnerValue);
+            return rawChecksums.Split(20);
         }
 
         private BDictionary ReadMetaInfo() {
-            throw new NotImplementedException();
+            var metadata = BDecoder.Decode(Data) as BDictionary;
+            CheckMetadata(metadata);
+            return metadata;
+        }
+
+        private void CheckMetadata(BDictionary metadata) {
+            if (metadata == null) throw new Exception("Invalid metadata.");
+            if (!metadata.ContainsKey("announce")) throw new Exception("Invalid metadata, 'announce' not found.");
+            if (!metadata.ContainsKey("info")) throw new Exception("Invalid metadata, 'info' not found.");
         }
 
         // Adds metadata about how files are treated.
@@ -236,7 +251,7 @@ namespace RowTorrentAPI.Files {
                 info.Add("name", new BString(torrentName));
                 info.Add("length", new BInteger(files[0].Length));
             }
-            else {
+            else if (files.Count > 1) {
                 info.Add("name", new BString(directoryRoot));
                 var filesList = new BList();
 
@@ -250,16 +265,19 @@ namespace RowTorrentAPI.Files {
                 }
                 info.Add("files", filesList);
             }
+            else {
+                throw new ArgumentOutOfRangeException(nameof(files));
+            }
         }
 
         // Adds metadata about the client, torrent creator and announce urls.
         private static void AddDictFields(BDictionary fileData, BList alist, BDictionary info, string announceUrl) {
-            fileData.Add("announce", new BString(announceUrl));
-            fileData.Add("announce-list", alist);
-            fileData.Add("created by:", new BString($"RowTorrent/{GlobalData.APIVersion}"));
-            fileData.Add("creation date", new BInteger(Util.Time.GetUnixTime()));
-            fileData.Add("encoding", new BString("UTF-8"));
-            fileData.Add("info", info);
+            fileData.Add(TorrentKeys.Announce, new BString(announceUrl));
+            fileData.Add(TorrentKeys.AnnounceList, alist);
+            fileData.Add(TorrentKeys.Creator, new BString($"RowTorrent/{GlobalData.APIVersion}"));
+            fileData.Add(TorrentKeys.CreationDate, new BInteger(Util.Time.GetUnixTime()));
+            fileData.Add(TorrentKeys.Encoding, new BString("UTF-8"));
+            fileData.Add(TorrentKeys.Info, info);
         }
     }
 
@@ -279,5 +297,18 @@ namespace RowTorrentAPI.Files {
 
     internal static class TorrentKeys {
         // Todo create static collection of dictionary keys used by torrent files.
+        public const string Info = "info";
+        public const string Announce = "announce";
+        public const string AnnounceList = "announce-list";
+        public const string CreationDate = "creation date";
+        public const string Creator = "created by";
+        public const string Comment = "comment"; // optional.
+        public const string Encoding = "encoding"; // optional.
+
+        //Info keys
+        public const string InfoPieceLength = "piece length";
+        public const string InfoPieces = "pieces";
+        public const string InfoPrivate = "private"; // optional.
     }
+
 }

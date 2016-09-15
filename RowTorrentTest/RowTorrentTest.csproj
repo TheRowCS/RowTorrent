@@ -40,10 +40,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="Utilities451, Version=1.1.5167.37858, Culture=neutral, PublicKeyToken=7e826052829b9e5e, processorArchitecture=MSIL">
-      <HintPath>..\packages\AydinUtilities.1.1.1.32\lib\net451\Utilities451.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">

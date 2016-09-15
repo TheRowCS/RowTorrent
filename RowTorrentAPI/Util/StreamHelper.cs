@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace RowTorrentAPI.Util {
     static class StreamHelper {
@@ -27,38 +29,32 @@ namespace RowTorrentAPI.Util {
             }
         }
 
-        // Taken from maximhar on github.
-        public static IEnumerable<IEnumerable<TSource>> Batch<TSource>(this IEnumerable<TSource> source, int size) {
-            return Batch(source, size, x => x);
+        public static string HexHash(this string hashMe) {
+            var sha = new SHA1CryptoServiceProvider();
+            string b64 = ByteArrayToString(Encoding.ASCII.GetBytes(hashMe));
+            var b64Bytes = Encoding.ASCII.GetBytes(b64);
+            var result = sha.ComputeHash(b64Bytes);
+            return BitConverter.ToString(result).Replace("-", "").ToLower();
         }
 
-        private static IEnumerable<TResult> Batch<TSource, TResult>(this IEnumerable<TSource> source, int size,
-            Func<IEnumerable<TSource>, TResult> resultSelector) {
-            TSource[] bucket = null;
-            var count = 0;
-
-            foreach (var item in source) {
-                if (bucket == null) {
-                    bucket = new TSource[size];
-                }
-
-                bucket[count++] = item;
-
-                // The bucket is fully buffered before it's yielded
-                if (count != size) {
-                    continue;
-                }
-
-                // Select is necessary so bucket contents are streamed too
-                yield return resultSelector(bucket.Select(x => x));
-
-                bucket = null;
-                count = 0;
+        public static string ByteArrayToString(this byte[] ba) {
+            StringBuilder hex = new StringBuilder(ba.Length*2);
+            foreach (byte b in ba) {
+                hex.AppendFormat("{0:x2}", b);
             }
+            return hex.ToString().ToLower();
+        }
 
-            // Return the last bucket with all remaining elements
-            if (bucket != null && count > 0) {
-                yield return resultSelector(bucket.Take(count));
+        /// <summary>
+        /// Splits an array into several smaller arrays.
+        /// </summary>
+        /// <typeparam name="T">The type of the array.</typeparam>
+        /// <param name="array">The array to split.</param>
+        /// <param name="size">The size of the smaller arrays.</param>
+        /// <returns>An array containing smaller arrays.</returns>
+        public static IEnumerable<T[]> Split<T>(this T[] array, int size) {
+            for (var i = 0; i < (float) array.Length/size; i++) {
+                yield return array.Skip(i*size).Take(size).ToArray();
             }
         }
     }
